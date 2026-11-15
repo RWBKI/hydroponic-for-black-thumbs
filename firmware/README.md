@@ -8,7 +8,7 @@ Read this before flashing.
 
 | What | Verified how |
 |---|---|
-| Builds for the ESP32 | Compiled for both boards with the Arduino toolchain (core 2.0.17), no warnings in this code. The PlatformIO configuration itself has not been run |
+| Builds for the ESP32 | Both boards build with PlatformIO on every push (see the Actions tab), together with the dosing tests. Also compiled with the Arduino toolchain (core 2.0.17), no warnings in this code |
 | Dosing rules and safeguards | 182 automated checks on a computer, all passing (`test/host`) |
 | Web page | Exercised in a browser against a simulated controller |
 | Sensors, pumps, Wi-Fi, storage on a real ESP32 | **Not tested.** No hardware was available when this was written |
