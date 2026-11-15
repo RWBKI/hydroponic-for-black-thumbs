@@ -1,0 +1,11 @@
+(version 1)
+# KiCad gives priority to the rule that comes last, so the isolation rule is last.
+# High-impedance pH input: only its guard (PH_SIG) may come close.
+(rule "pH input spacing"
+  (condition "A.NetClass == 'Analog' && B.NetClass != 'Analog' && B.NetName != 'PH_SIG' && B.NetName != ''")
+  (constraint clearance (min 0.8mm)))
+# Isolation barrier: nothing on the isolated pH island may come closer than 1 mm
+# to copper that belongs to the rest of the board. Functional isolation only, not a safety barrier.
+(rule "isolation barrier"
+  (condition "(A.NetClass == 'Iso' || A.NetClass == 'Analog') && B.NetClass != 'Iso' && B.NetClass != 'Analog' && B.NetName != ''")
+  (constraint clearance (min 1.0mm)))

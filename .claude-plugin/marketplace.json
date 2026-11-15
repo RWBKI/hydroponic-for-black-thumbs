@@ -1,0 +1,14 @@
+{
+  "name": "hydroponic-for-black-thumbs",
+  "description": "A coach and dashboard for home hydroponic towers",
+  "owner": {
+    "name": "RWBKI"
+  },
+  "plugins": [
+    {
+      "name": "hydroponic-for-black-thumbs",
+      "source": "./plugins/hydroponic-for-black-thumbs",
+      "description": "Sets up a personal dashboard for your hydroponic tower and coaches you from your own pH and EC readings"
+    }
+  ]
+}

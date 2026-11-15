@@ -1,0 +1,25 @@
+name: firmware
+on:
+  push:
+    paths: ["firmware/**", ".github/workflows/ci.yml"]
+  pull_request:
+    paths: ["firmware/**", ".github/workflows/ci.yml"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dosing logic tests
+        working-directory: firmware
+        run: g++ -std=c++17 -Wall -Wextra -I lib/core lib/core/*.cpp test/host/run_tests.cpp -o run_tests && ./run_tests
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install platformio
+      - name: Build both boards
+        working-directory: firmware
+        run: pio run -e modules -e pcb

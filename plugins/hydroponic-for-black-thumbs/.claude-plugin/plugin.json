@@ -1,0 +1,10 @@
+{
+  "name": "hydroponic-for-black-thumbs",
+  "version": "0.1.0",
+  "description": "Sets up a personal dashboard for your hydroponic tower and coaches you from your own pH and EC readings",
+  "author": {
+    "name": "RWBKI and contributors"
+  },
+  "license": "MIT",
+  "keywords": ["hydroponics", "gardening", "dashboard", "ph", "ec"]
+}

@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tower Dashboard</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap"><style id="css">
+  :root{
+    --bg:#f5f5f7; --card:#ffffff; --card2:#f2f2f5; --ink:#1d1d1f; --ink2:#55555c; --ink3:#8a8a92;
+    --line:#e6e6ea; --line2:#d2d2d8;
+    --accent:#0071e3; --accent-deep:#0058b0; --accent-soft:#e3f0fd; --on-accent:#ffffff;
+    --ok:#1f9d55; --ok-soft:#e2f5ea; --watch:#b86e00; --watch-soft:#fdf0d9; --act:#d43a2f; --act-soft:#fde6e3;
+    --shadow:0 1px 2px rgba(0,0,0,.04), 0 18px 40px -28px rgba(0,0,0,.28);
+    --r:22px; --r2:12px;
+    --display:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --sans:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#000000; --card:#1c1c1e; --card2:#2a2a2d; --ink:#f5f5f7; --ink2:#b3b3ba; --ink3:#85858d;
+      --line:#2e2e32; --line2:#434348;
+      --accent:#2997ff; --accent-deep:#64b2ff; --accent-soft:#10283f; --on-accent:#ffffff;
+      --ok:#30d158; --ok-soft:#12301c; --watch:#ffb340; --watch-soft:#3a2a0c; --act:#ff6961; --act-soft:#3d1512;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 40px -28px rgba(0,0,0,.9);
+    }
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light dark}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  [hidden]{display:none!important}
+  svg{max-width:100%}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer;border:0;background:none;padding:0}
+  h1,h2,h3{margin:0;font-weight:600;font-family:var(--display);letter-spacing:-.02em}
+  p{margin:0}
+
+  .wrap{max-width:1060px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,4vw,32px) 120px;display:flex;flex-direction:column;gap:20px}
+  .top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+  .top h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.02}
+  .top .sub{color:var(--ink2);margin-top:6px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:.78rem;color:var(--ink2);font-weight:500}
+  .pill b{color:var(--ink);font-weight:600}
+  .pill.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+  .pill.warn{background:var(--watch-soft);border-color:transparent;color:var(--watch)}
+
+  .banner{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:var(--r);background:var(--accent-soft);color:var(--ink)}
+  .banner b{font-family:var(--display)}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,3vw,24px);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;min-width:0}
+  @media (min-width:740px){ .c6{grid-column:span 6} }
+  .card-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .card-hd h2{font-size:1.2rem}
+  .card-hd .meta{font-size:.78rem;color:var(--ink3);white-space:nowrap}
+  .muted{color:var(--ink2);font-size:.88rem}
+  .tiny{color:var(--ink3);font-size:.76rem}
+
+  .hero h2{font-size:1.5rem}
+  .tasks{display:flex;flex-direction:column;gap:8px}
+  .task{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--card2)}
+  .task .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.15rem;background:var(--card)}
+  .task .t{font-weight:600}
+  .task .d{font-size:.84rem;color:var(--ink2);margin-top:1px}
+  .task .lvl{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--ink3)}
+  .task.act{background:var(--act-soft)} .task.act .lvl{color:var(--act)}
+  .task.watch{background:var(--watch-soft)} .task.watch .lvl{color:var(--watch)}
+  .task.ok{background:var(--ok-soft)} .task.ok .lvl{color:var(--ok)}
+  @media (max-width:520px){ .task{grid-template-columns:auto 1fr} .task .btn{grid-column:2;justify-self:start} }
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:.84rem;white-space:nowrap;border:1px solid transparent}
+  .btn:hover{background:var(--accent-deep)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line2)}
+  .btn.ghost:hover{background:var(--card2)}
+  .btn.sm{padding:6px 12px;font-size:.78rem}
+  .btn.danger{background:transparent;color:var(--act);border-color:var(--act)}
+  .btn:focus-visible,input:focus-visible,select:focus-visible,.slot:focus-visible,.sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .field{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .field label{font-size:.72rem;font-weight:600;color:var(--ink2)}
+  .field input,.field select{padding:10px 12px;border-radius:var(--r2);border:1px solid var(--line2);background:var(--card2);font-variant-numeric:tabular-nums;width:100%;min-width:0}
+  .field .unit{font-weight:400;color:var(--ink3)}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .inline{padding:8px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--card2);width:110px}
+
+  .gauges{display:flex;flex-direction:column;gap:10px}
+  .gauge{display:grid;grid-template-columns:86px 1fr 84px;align-items:center;gap:10px}
+  .gauge .n{font-size:.8rem;font-weight:600;color:var(--ink2)}
+  .gauge .v{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+  .gauge .v small{font-weight:400;color:var(--ink3);font-size:.7rem;margin-left:2px}
+  .track{position:relative;height:10px;border-radius:999px;background:var(--card2)}
+  .track .okz{position:absolute;top:0;bottom:0;background:var(--ok-soft);border-radius:999px}
+  .track .ideal{position:absolute;top:0;bottom:0;background:var(--ok);opacity:.55;border-radius:999px}
+  .track .dot{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--ok);border:3px solid var(--card);transform:translate(-50%,-50%);box-shadow:0 0 0 1px var(--line2)}
+  .track .dot.act{background:var(--act)} .track .dot.watch{background:var(--watch)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .stat{background:var(--card2);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+  .stat .k{font-size:.7rem;font-weight:600;color:var(--ink3)}
+  .stat .v{font-family:var(--display);font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums;font-weight:600}
+  .stat .v small{font-family:var(--sans);font-size:.76rem;color:var(--ink3);font-weight:400}
+  .stat .s{font-size:.76rem;color:var(--ink2)}
+  .prog{height:8px;border-radius:999px;background:var(--card2);overflow:hidden}
+  .prog i{display:block;height:100%;background:var(--ok);border-radius:999px}
+  .prog i.watch{background:var(--watch)} .prog i.act{background:var(--act)}
+
+  .doses{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .dose{display:grid;grid-template-columns:10px 1fr auto auto;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .dose:last-child{border-bottom:0}
+  .dose i{width:6px;height:22px;border-radius:3px;display:block}
+  .dose .n{font-weight:600}
+  .dose .r{font-size:.74rem;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .dose .ml{font-family:var(--display);font-size:1.2rem;font-weight:600;font-variant-numeric:tabular-nums;min-width:80px;text-align:right}
+  .dose .ml small{font-family:var(--sans);font-size:.7rem;color:var(--ink3);font-weight:400}
+  .p0{background:#e08a1e} .p1{background:#34a853} .p2{background:#d6417f} .p3{background:#7a5af8}
+  .seg{display:inline-flex;background:var(--card2);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+  .seg button{padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:600;color:var(--ink2)}
+  .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+  .fix{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;font-size:.84rem;background:var(--card2)}
+  .fix b{font-weight:600}
+  .fix span{color:var(--ink2)}
+  .fix.ok{background:var(--ok-soft)} .fix.watch{background:var(--watch-soft)} .fix.act{background:var(--act-soft)}
+  .steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem}
+  .steps span{padding:6px 10px;border-radius:10px;background:var(--card2);font-weight:500}
+  .steps em{font-style:normal;color:var(--ink3)}
+
+  .toggles{display:flex;flex-direction:column;gap:8px}
+  .tg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:14px;background:var(--card2)}
+  .tg .l{font-weight:500}
+  .tg .l small{display:block;font-size:.74rem;color:var(--ink3);font-weight:400}
+  .sw{width:46px;height:28px;border-radius:999px;background:var(--line2);position:relative;flex:none;transition:background .15s}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .sw[aria-checked="true"]{background:var(--ok)}
+  .sw[aria-checked="true"]::after{transform:translateX(18px)}
+
+  .tgrid{display:grid;gap:6px;align-items:stretch}
+  .tgrid .hd{font-size:.7rem;font-weight:600;color:var(--ink3);text-align:center;padding:4px 0}
+  .tgrid .lv{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.66rem;color:var(--ink3);font-weight:600}
+  .tgrid .lv i{display:block;width:6px;border-radius:3px;background:var(--watch);opacity:.8}
+  .slot{border-radius:14px;border:1px dashed var(--line2);background:var(--card2);min-height:62px;padding:8px 9px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;font-size:.72rem;line-height:1.2;color:var(--ink2)}
+  .slot b{font-size:.84rem;color:var(--ink)}
+  .slot .age{font-size:.68rem;color:var(--ink3)}
+  .slot.grow{border-style:solid;border-color:var(--line2);background:var(--card)}
+  .slot.ready{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+  .slot.ready .age{color:var(--ok);font-weight:600}
+  .slot.old{border-style:solid;border-color:var(--watch);background:var(--watch-soft)}
+  .slot:hover{border-color:var(--accent)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.74rem;color:var(--ink2)}
+  .legend i{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:middle;margin-right:5px;border:1px solid var(--line2)}
+  .legend .rd{background:var(--ok-soft);border-color:var(--ok)} .legend .o{background:var(--watch-soft);border-color:var(--watch)}
+
+  .spark{width:100%;height:auto;display:block;color:var(--ink)}
+
+  dialog{border:0;border-radius:22px;padding:0;background:var(--card);color:var(--ink);box-shadow:var(--shadow);width:min(92vw,440px)}
+  dialog::backdrop{background:rgba(0,0,0,.45)}
+  .sheet{padding:22px;display:flex;flex-direction:column;gap:14px}
+  .sheet h3{font-size:1.2rem}
+  .rates{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:6px;align-items:center;font-size:.8rem}
+  .rates input{padding:7px 8px;border-radius:10px;border:1px solid var(--line2);background:var(--card2);width:100%;min-width:0}
+  .rates .h{font-weight:600;color:var(--ink3);font-size:.7rem}
+
+  .fab{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:20;display:flex;gap:10px;align-items:center;padding:8px 8px 8px 18px;border-radius:999px;background:var(--ink);color:var(--bg);box-shadow:0 12px 30px -10px rgba(0,0,0,.5);font-size:.86rem}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:21;padding:10px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:600;font-size:.86rem;box-shadow:var(--shadow)}
+  .foot{color:var(--ink3);font-size:.76rem;padding-top:8px;border-top:1px solid var(--line)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><script id="state" type="application/json">{"demo":true}</script><div id="app"></div><script id="app-js">
+(function(){
+'use strict';
+var FONT_LINKS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap">';
+var KEY = 'tower-dashboard-state', SKEY = KEY+':local';
+var app = document.getElementById('app');
+
+/* ---------- helpers ---------- */
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function todayISO(){ return iso(new Date()); }
+function daysBetween(a,b){ if(!a||!b) return null; return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5); }
+function since(d){ return d? daysBetween(d, todayISO()) : null; }
+function addDays(d,n){ var x=new Date(d+'T12:00:00'); x.setDate(x.getDate()+n); return iso(x); }
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtD(d){ if(!d) return '–'; var p=d.split('-'); return MONTHS[+p[1]-1]+' '+(+p[2]); }
+function n1(x){ return (Math.round(x*10)/10).toString(); }
+function n2(x){ return (Math.round(x*100)/100).toString(); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+function plural(n,w){ return n+' '+w+(n===1?'':'s'); }
+
+/* ---------- domain ---------- */
+var CROPS = {
+  lettuce:{n:'Head lettuce',s:'🥬',d:35},
+  cutlettuce:{n:'Cut lettuce',s:'🥗',d:28},
+  lambs:{n:"Lamb's lettuce",s:'🍃',d:60},
+  cress:{n:'Garden cress',s:'🌱',d:21},
+  spinach:{n:'Spinach',s:'🥬',d:40},
+  mizuna:{n:'Mizuna',s:'🍃',d:30},
+  rocket:{n:'Rocket',s:'🌿',d:25},
+  chives:{n:'Chives',s:'🌾',d:30,per:true},
+  basil:{n:'Basil',s:'🌿',d:30},
+  parsley:{n:'Parsley',s:'☘️',d:55},
+  chervil:{n:'Chervil',s:'🌱',d:45}
+};
+var HUNGRY={basil:1,lettuce:1,cutlettuce:1,rocket:1};
+var REGIMES={recovery:'Recovery',cruise:'Cruise',lowlight:'Low light'};
+var EC_UNITS={mS:{k:1,l:'mS/cm',d:2},x100:{k:10,l:'×100 µS/cm',d:1},ppm500:{k:500,l:'ppm (500)',d:0},ppm700:{k:700,l:'ppm (700)',d:0}};
+var GAL=3.785411784;
+/* Default profile: Terra Aquatica TriPart, leafy greens, soft tap water.
+   Measured on the reference tower: about 0.5 EC per mL/L of the three-part mix. */
+function defaultNutrient(){ return {brand:'Terra Aquatica TriPart',parts:['Micro','Grow','Bloom'],
+  rates:{recovery:[0.4,0.4,0.4],cruise:[0.6,0.9,0.3],lowlight:[0.4,0.4,0.4],topup:[0.13,0.2,0.07]},
+  topupGain:0.2,
+  ec:{recovery:[0.7,0.9,0.6,1.1],cruise:[1.0,1.2,0.9,1.4],lowlight:[0.7,0.9,0.6,1.1]}}; } /* ideal lo, ideal hi, alert lo, alert hi (mS/cm) */
+
+function st(){ return state.settings; }
+function nSlots(){ return st().columns*st().levels; }
+function colName(i){ return String.fromCharCode(65+i); }
+function levelOf(i){ return Math.floor(i/st().columns); } function colOf(i){ return i%st().columns; }
+function slotName(i){ return colName(colOf(i))+(levelOf(i)+1); }
+function levelLight(lv){ var L=st().levels; return L<=1?100:Math.round(100-70*lv/(L-1)); }
+function growth(){ return st().regime==='lowlight'?1.8:1; }
+/* units */
+function volU(){ return st().volUnit==='gal'?'gal':'L'; }
+function vOut(l){ return st().volUnit==='gal'? l/GAL : l; }
+function vIn(x){ return st().volUnit==='gal'? x*GAL : x; }
+function tU(){ return st().tempUnit==='F'?'°F':'°C'; }
+function tOut(c){ return st().tempUnit==='F'? c*9/5+32 : c; }
+function tIn(x){ return st().tempUnit==='F'? (x-32)*5/9 : x; }
+function ecU(){ return EC_UNITS[st().ecUnit]||EC_UNITS.mS; }
+function ecOut(v){ var u=ecU(); var x=v*u.k; return u.d===0? String(Math.round(x)) : (u.d===1? n1(x) : n2(x)); }
+function ecIn(x){ return Math.round(x/ecU().k*1000)/1000; }
+function vTxt(l){ return n1(vOut(l))+' '+volU(); }
+function tTxt(c){ return n1(tOut(c))+' '+tU(); }
+function ml(rate){ return n1(rate*st().volume); }
+
+function lastReading(){ var r=state.readings; return r.length? r[r.length-1] : null; }
+function slotStatus(i){
+  var s=state.slots[i]; if(!s||!s.c||!CROPS[s.c]) return {k:'empty'};
+  var age=since(s.p), c=CROPS[s.c], ready=Math.round(c.d*growth());
+  if(c.per) return age>=ready? {k:'ready',age:age,ready:ready,label:'cut now'} : {k:'grow',age:age,ready:ready};
+  if(age>=ready*1.8) return {k:'old',age:age,ready:ready,label:'replace'};
+  if(age>=ready) return {k:'ready',age:age,ready:ready,label:'harvest'};
+  return {k:'grow',age:age,ready:ready};
+}
+
+/* ---------- exact EC correction ----------
+   The top-up row of the nutrient profile raises EC by topupGain (0.2 by default).
+   Scaling it gives the amount of each bottle that brings the tank back to the middle of the ideal range. */
+function ecFix(){
+  var s=st(), N=s.nutrient, tg=N.ec[s.regime], last=lastReading();
+  if(!s.ecMeter) return {k:'nometer'};
+  if(!last||last.ec==null) return {k:'none'};
+  var target=Math.round((tg[0]+tg[1])/2*100)/100, age=since(last.d);
+  var vol=(last.level!=null&&last.level>0)? Math.min(last.level,s.volume*1.1) : s.volume;
+  var base={ec:last.ec,target:target,vol:vol,age:age,lowWater:vol<s.volume*0.85};
+  if(last.ec>tg[3]){ base.k='high'; return base; }
+  if(last.ec>=tg[0]){ base.k='ok'; return base; }
+  var delta=target-last.ec, f=delta/N.topupGain;
+  base.k=last.ec<tg[2]?'low':'slight'; base.delta=delta;
+  base.amounts=N.rates.topup.map(function(r){ return Math.round(r*f*vol*10)/10; });
+  base.split=delta>0.4;
+  return base;
+}
+function fixMix(F,div){ return st().nutrient.parts.map(function(p,i){ return p+' '+n1(F.amounts[i]/(div||1))+' mL'; }).join(' · '); }
+
+/* ---------- rules engine: what to do today ---------- */
+function tasks(){
+  var S=state, s=st(), T=[], r=s.regime, last=lastReading();
+  var V=s.volume, N=s.nutrient, rr=N.rates[r], rc=N.rates.topup, tg=N.ec[r], P=N.parts;
+  function mix(rates,vol){ return P.map(function(p,i){ return p+' '+n1(rates[i]*vol)+' mL'; }).join(' · '); }
+
+  if(!s.phDown) T.push({lvl:'act',ic:'🧪',t:'Get pH Down',d:'Without it you can measure pH but not correct it. A small bottle lasts a long time.',act:{k:'toggle',key:'phDown',label:'I have it'}});
+  if(!s.ecMeter) T.push({lvl:'watch',ic:'📟',t:'Get an EC meter',d:'Until then, use the one-third method every week. With a meter you top up instead and drain far less often.',act:{k:'toggle',key:'ecMeter',label:'I have it'}});
+
+  if(s.outdoors && r==='lowlight') T.push({lvl:'watch',ic:'❄️',t:'Frost night: pump off',d:'When frost is forecast, switch the pump off and let the column drain into the tank. Thin hoses freeze first.'});
+  if(r==='recovery'){ var lc0=since(S.reservoir.lastChange); if(lc0!==null && lc0>10) T.push({lvl:'watch',ic:'⬆️',t:'Move to cruise doses',d:'More than 10 days in recovery. If you see a new leaf at the heart and white root tips, raise the doses.',act:{k:'regime',val:'cruise',label:'Cruise'}}); }
+
+  var lr=last? since(last.d):null;
+  if(lr===null) T.push({lvl:'act',ic:'📝',t:'Take your first reading',d:'pH, water temperature, level'+(s.ecMeter?', EC':'')+'. Everything starts from there.',act:{k:'scroll',to:'reading',label:'Add reading'}});
+  else if(lr>=3) T.push({lvl:lr>=5?'act':'watch',ic:'📝',t:'Time for a reading',d:'Last one was '+plural(lr,'day')+' ago. Every 2 to 3 days, three minutes.',act:{k:'scroll',to:'reading',label:'Add reading'}});
+  if(last){
+    if(last.ph!=null){
+      if(last.ph>6.5) T.push({lvl:last.ph>7?'act':'watch',ic:'⚗️',t:'Lower pH ('+n1(last.ph)+' → 6.0)',d:'Above 6.5 iron locks out. Add pH Down in small steps, about '+n1(0.05*V)+' mL at a time for your tank, stir, wait 15 min, measure again.'});
+      else if(last.ph<5.5) T.push({lvl:'act',ic:'⚗️',t:'Raise pH ('+n1(last.ph)+')',d:'Below 5.5 calcium and magnesium are poorly absorbed. Top up with plain water, or add a touch of pH Up.'});
+    }
+    if(s.ecMeter && last.ec!=null){
+      if(last.ec<tg[2]){ var F=ecFix(); T.push({lvl:'act',ic:'🍽️',t:'Add nutrients: '+fixMix(F,F.split?2:1)+(F.split?' (first half)':''),d:'EC is '+ecOut(last.ec)+' '+ecU().l+', below '+ecOut(tg[2])+'. Plants ate faster than they drank. '+(F.lowWater?'Top up the water first, then measure again. ':'')+'Add in order, stir, measure again after 15 min.',act:{k:'scroll',to:'doses',label:'Details'}}); }
+      else if(last.ec>tg[3]) T.push({lvl:'act',ic:'💧',t:'Top up with plain water only',d:'EC is '+ecOut(last.ec)+' '+ecU().l+', above '+ecOut(tg[3])+'. Cut doses by 20 % at the next fresh solution.'});
+    }
+    if(last.t!=null){
+      if(last.t>24) T.push({lvl:'act',ic:'🌡️',t:'Water too warm ('+tTxt(last.t)+')',d:'Above '+tTxt(24)+' dissolved oxygen collapses and root rot moves in. Shade the tank, add an air stone, top up with cool water.'});
+      else if(last.t<10) T.push({lvl:'watch',ic:'🌡️',t:'Cold water ('+tTxt(last.t)+')',d:'Roots drink little below '+tTxt(10)+'. Nothing to correct, but do not expect growth.'});
+    }
+    if(last.level!=null && last.level<V*0.7) T.push({lvl:'watch',ic:'🪣',t:'Top up the tank ('+vTxt(last.level)+' of '+vTxt(V)+')',d:'Plain water adjusted to pH 6, never nutrient solution. Log the amount in the reservoir card.',act:{k:'scroll',to:'reservoir',label:'Log top-up'}});
+  }
+
+  var lc=since(S.reservoir.lastChange);
+  if(lc===null) T.push({lvl:'act',ic:'📅',t:'Set the date of your fresh solution',d:'The drain countdown starts from there.',act:{k:'scroll',to:'reservoir',label:'Set date'}});
+  else if(S.reservoir.topUp>=V) T.push({lvl:'act',ic:'🚿',t:'Full drain',d:'You have added '+vTxt(S.reservoir.topUp)+' of top-ups, a whole tank. The nutrient proportions need a reset. The old solution goes on the garden.',act:{k:'change',label:'Drained'}});
+  else if(s.ecMeter){
+    if(lc>=21) T.push({lvl:'act',ic:'🚿',t:'Full drain',d:plural(lc,'day')+'. Past three weeks the EC reading no longer tells you what is in the tank.',act:{k:'change',label:'Drained'}});
+    else if(lc>=17) T.push({lvl:'watch',ic:'🚿',t:'Drain in '+plural(21-lc,'day'),d:'Let '+vTxt(V)+' of water stand the day before.'});
+  } else {
+    if(lc>=21) T.push({lvl:'act',ic:'🚿',t:'Full drain',d:'Three weeks of the one-third method. Time to reset everything.',act:{k:'change',label:'Drained'}});
+    else if(lc>=7 && (S.reservoir.lastThird==null || since(S.reservoir.lastThird)>=7)) T.push({lvl:'act',ic:'⅓',t:'One-third method',d:'Remove '+vTxt(V/3)+', replace with fresh solution: '+mix(rr,V/3)+'.',act:{k:'third',label:'Done'}});
+  }
+
+  var cb=since(S.calib.last);
+  if(cb===null || cb>=30) T.push({lvl:'watch',ic:'🎯',t:'Calibrate the pH meter',d:(cb===null?'Never calibrated. ':plural(cb,'day')+' ago. ')+'pH 7 buffer, then pH 4. A pen drifts within weeks and gives no warning.',act:{k:'calib',label:'Calibrated'}});
+
+  var ready=[],old=[],empty=0,lastPlant=null,lowHungry=[],highFree=[];
+  S.slots.forEach(function(x,i){ var ss=slotStatus(i), lv=levelOf(i);
+    if(ss.k==='empty'){ empty++; if(lv<=1) highFree.push(i); }
+    else { if(!lastPlant||x.p>lastPlant) lastPlant=x.p; if(ss.k==='ready') ready.push(i); if(ss.k==='old') old.push(i); if(HUNGRY[x.c]&&lv>=s.levels-2&&s.levels>=4) lowHungry.push(i); } });
+  if(ready.length) T.push({lvl:'ok',ic:'✂️',t:'Ready to harvest: '+plural(ready.length,'site'),d:ready.map(function(i){return CROPS[S.slots[i].c].n+' ('+slotName(i)+')';}).join(', ')+'. Leaf by leaf, leaving the heart.',act:{k:'scroll',to:'tower',label:'Show'}});
+  if(old.length) T.push({lvl:'watch',ic:'🥀',t:plural(old.length,'plant')+' past their best',d:'Harvest them whole and replant. A plant left too long bolts and turns bitter.',act:{k:'scroll',to:'tower',label:'Show'}});
+  var lp=lastPlant? since(lastPlant):null;
+  if(empty===nSlots()) T.push({lvl:'act',ic:'🌱',t:'Plant the tower, but not all at once',d:'Start with 4 to 6 plants, then 4 to 6 more every two weeks. A tower planted in one go gives you every salad in the same week.',act:{k:'scroll',to:'tower',label:'Plant'}});
+  else if(empty>=4 && (lp===null||lp>=13)) T.push({lvl:'watch',ic:'🌱',t:'Plant your next batch',d:plural(empty,'free site')+(lp!==null?', last planting '+plural(lp,'day')+' ago':'')+'. 4 to 6 plants, no more.',act:{k:'scroll',to:'tower',label:'Plant'}});
+  if(lowHungry.length && highFree.length) T.push({lvl:'watch',ic:'☀️',t:'Move '+(lowHungry.length>1?'these plants':'this plant')+' up',d:lowHungry.map(function(i){return CROPS[S.slots[i].c].n+' in '+slotName(i);}).join(', ')+': the bottom of the column gets about a third of the light of the top. '+plural(highFree.length,'free site')+' near the top.',act:{k:'scroll',to:'tower',label:'Show'}});
+
+  var order={act:0,watch:1,ok:2};
+  T.sort(function(a,b){return order[a.lvl]-order[b.lvl];});
+  return T;
+}
+
+/* ---------- state & persistence ---------- */
+var state, artifact=null, downloads=null, mode='pending', dirty=false, artifactP=null, saving=false;
+function defaults(){ return {v:2,demo:false,savedAt:0,
+  settings:{name:'My tower',volume:37,volUnit:'L',tempUnit:'C',ecUnit:'mS',ecMeter:true,phDown:true,outdoors:true,regime:'cruise',columns:4,levels:6,nutrient:defaultNutrient()},
+  reservoir:{lastChange:null,topUp:0,lastThird:null},calib:{last:null},readings:[],slots:[]}; }
+function demo(){
+  var S=defaults(), t=todayISO(); S.demo=true; S.settings.name='Demo tower';
+  S.reservoir.lastChange=addDays(t,-12); S.reservoir.topUp=9; S.calib.last=addDays(t,-20);
+  [[-12,6.0,1.15,20,37],[-10,6.3,1.12,20,34],[-8,6.5,1.10,21,31],[-8,6.1,1.08,21,37],[-6,6.4,1.05,21,34],[-4,6.6,1.0,22,32],[-4,6.0,1.0,22,37],[-2,6.7,0.86,21,25]]
+    .forEach(function(r){ S.readings.push({d:addDays(t,r[0]),ph:r[1],ec:r[2],t:r[3],level:r[4]}); });
+  var plan=['basil','basil','lettuce','lettuce','lettuce','cutlettuce','cutlettuce',null,'cutlettuce','spinach',null,'lambs','parsley',null,'chives','chives',null,null,'chives','parsley',null,null,null,null];
+  var ages=[22,22,36,24,24,30,12,0,12,20,0,20,60,0,18,18,0,0,10,10,0,0,0,0];
+  S.slots=plan.map(function(c,i){ return c? {c:c,p:addDays(t,-ages[i])} : null; });
+  return S;
+}
+function normalise(s){
+  var d=defaults();
+  s.settings=Object.assign(d.settings,s.settings||{});
+  var dn=defaultNutrient(), n=s.settings.nutrient||{};
+  n.brand=n.brand||dn.brand; n.parts=(n.parts&&n.parts.length)?n.parts:dn.parts;
+  n.rates=Object.assign(dn.rates,n.rates||{}); n.ec=Object.assign(dn.ec,n.ec||{}); n.topupGain=(+n.topupGain>0)?+n.topupGain:dn.topupGain; s.settings.nutrient=n;
+  if(!REGIMES[s.settings.regime]) s.settings.regime='cruise';
+  s.settings.columns=clamp(Math.round(+s.settings.columns||4),1,8); s.settings.levels=clamp(Math.round(+s.settings.levels||6),1,12);
+  s.reservoir=Object.assign(d.reservoir,s.reservoir||{}); s.calib=Object.assign(d.calib,s.calib||{});
+  s.readings=s.readings||[]; var want=s.settings.columns*s.settings.levels; s.slots=(s.slots||[]).slice(0,want).map(function(x){ return (x&&CROPS[x.c]&&x.p)? x : null; }); while(s.slots.length<want) s.slots.push(null);
+  s.id=s.id||('t'+Math.random().toString(36).slice(2,10));
+  s.v=2; return s;
+}
+function load(){
+  var emb=null, loc=null;
+  try{ emb=JSON.parse(document.getElementById('state').textContent); }catch(e){}
+  if(emb && emb.id) SKEY=KEY+':'+emb.id;   /* one local copy per dashboard instance */
+  try{ loc=JSON.parse(localStorage.getItem(SKEY)||'null'); }catch(e){}
+  var s=emb||{};
+  if(loc && loc.settings && (!emb || !emb.settings || (loc.savedAt||0)>(emb.savedAt||0))) s=loc;
+  if(!s.settings) return demo();
+  return normalise(s);
+}
+function buildDocument(S){
+  var css=document.getElementById('css').textContent;
+  var js=document.getElementById('app-js').textContent;
+  var json=JSON.stringify(S).replace(/<\//g,'<\\/');
+  return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(S.settings.name)+'</title>'+FONT_LINKS+'<style id="css">'+css+'</style></head><body><script id="state" type="application/json">'+json+'<\/script><div id="app"></div><script id="app-js">'+js+'<\/script></body></html>';
+}
+function save(){
+  state.savedAt=Date.now();
+  try{ localStorage.setItem(SKEY,JSON.stringify(state)); }catch(e){}
+  dirty=false;
+  if(mode==='pending' && artifactP){ render(); artifactP.then(function(){ save(); }); return; }
+  if(mode==='artifact' && artifact && !saving){
+    saving=true; render();
+    try{ sessionStorage.setItem(KEY+'-toast','Saved'); }catch(e){}
+    artifact.publish(buildDocument(state)).then(function(){ /* the view reloads */ }).catch(function(e){
+      saving=false; try{ sessionStorage.removeItem(KEY+'-toast'); }catch(x){}
+      var code=e&&e.code;
+      if(code==='conflict') return;
+      if(code==='not_writer'||code==='not_granted'||code==='not_declared'||code==='capability_disabled'||code==='capability_removed'){ mode='local'; toast('Saved on this device only'); render(); return; }
+      toast('Could not save online. Kept on this device'); render();
+    });
+  } else { toast('Saved on this device'); render(); }
+}
+function commit(fn,autosave){ fn(state); if(autosave){ save(); } else { dirty=true; render(); } }
+
+/* ---------- export for Claude ---------- */
+function summary(){
+  var s=st(), S=state, L=[];
+  L.push('Hydroponic tower status ('+todayISO()+')');
+  L.push('Tower: '+s.name+', '+s.columns+' columns x '+s.levels+' levels, tank '+n1(s.volume)+' L, '+(s.outdoors?'outdoors':'indoors'));
+  L.push('Nutrients: '+s.nutrient.brand+' ('+s.nutrient.parts.join(', ')+'), regime '+REGIMES[s.regime]+', mL/L '+s.nutrient.rates[s.regime].join(' / ')+', EC target '+s.nutrient.ec[s.regime][0]+'-'+s.nutrient.ec[s.regime][1]+' mS/cm');
+  L.push('Reservoir: fresh solution '+(S.reservoir.lastChange? S.reservoir.lastChange+' ('+since(S.reservoir.lastChange)+' days ago)':'not set')+', top-ups since '+n1(S.reservoir.topUp)+' L');
+  L.push('pH meter calibrated: '+(S.calib.last||'never'));
+  L.push('Readings (date, pH, EC mS/cm, water °C, level L):');
+  S.readings.slice(-12).forEach(function(r){ L.push('  '+r.d+'  pH '+(r.ph==null?'-':r.ph)+'  EC '+(r.ec==null?'-':r.ec)+'  '+(r.t==null?'-':n1(r.t))+' C  '+(r.level==null?'-':n1(r.level))+' L'); });
+  var pl=[]; S.slots.forEach(function(x,i){ if(x&&CROPS[x.c]) pl.push(slotName(i)+' '+CROPS[x.c].n+' day '+since(x.p)); });
+  L.push('Plants ('+pl.length+' of '+nSlots()+' sites; level 1 is the top): '+(pl.join(', ')||'none'));
+  var F=ecFix(); if(F.amounts) L.push('EC correction computed: '+fixMix(F)+' to go from '+F.ec+' to '+F.target+' mS/cm in '+n1(F.vol)+' L');
+  L.push('Dashboard says today:');
+  var T=tasks(); if(!T.length) L.push('  nothing to do');
+  T.forEach(function(t){ L.push('  ['+t.lvl+'] '+t.t); });
+  return L.join('\n');
+}
+function copyText(txt,msg){
+  msg=msg||'Copied. Paste it to Claude';
+  function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast(msg); }catch(e){ toast('Copy failed'); } ta.remove(); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ toast(msg); },fallback); } else fallback();
+}
+function exportBackup(){
+  var txt=JSON.stringify(state,null,1), name='tower-backup-'+todayISO()+'.json';
+  if(downloads){ downloads.save({filename:name,data:txt}).then(function(){ toast('Backup saved'); },function(e){ if(e&&e.code==='declined') return; copyText(txt,'Backup copied to the clipboard'); }); return; }
+  if(window.claude){ copyText(txt,'Backup copied to the clipboard'); return; }   /* inside Claude without the downloads capability */
+  var blob=new Blob([txt],{type:'application/json'}), u=URL.createObjectURL(blob), l=document.createElement('a'); l.href=u; l.download=name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function(){URL.revokeObjectURL(u);},1000);
+}
+function importBackup(txt){ try{ var x=JSON.parse(txt); if(!x||!x.settings) throw 0; state=normalise(x); state.demo=false; save(); }catch(e){ toast('That is not a tower backup'); } }
+
+/* ---------- render ---------- */
+function toast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); },2200); }
+function gauge(name,val,txt,lo,hi,ilo,ihi,min,max){
+  if(val==null) return '<div class="gauge"><span class="n">'+name+'</span><div class="track"></div><span class="v tiny">–</span></div>';
+  var p=function(x){return clamp((x-min)/(max-min)*100,0,100);};
+  var k=(val<lo||val>hi)?'act':((val<ilo||val>ihi)?'watch':'ok');
+  var lbl={ok:'in range',watch:'keep an eye on it',act:'needs correcting'}[k];
+  return '<div class="gauge"><span class="n">'+name+'</span><div class="track"><span class="okz" style="left:'+p(lo)+'%;width:'+(p(hi)-p(lo))+'%"></span><span class="ideal" style="left:'+p(ilo)+'%;width:'+(p(ihi)-p(ilo))+'%"></span><span class="dot '+k+'" style="left:'+p(val)+'%" title="'+lbl+'"></span></div><span class="v">'+txt+'</span></div>';
+}
+function spark(key,lo,hi,fmt){
+  var pts=state.readings.slice(-12).filter(function(r){return r[key]!=null;});
+  if(pts.length<2) return '<p class="tiny">History appears from the second reading.</p>';
+  var W=300,H=70,pad=8, vals=pts.map(function(r){return r[key];});
+  var min=Math.min.apply(null,vals.concat([lo])), max=Math.max.apply(null,vals.concat([hi])); if(max-min<0.2){max+=0.1;min-=0.1;}
+  var x=function(i){return pad+i*(W-2*pad)/(pts.length-1);}, y=function(v){return H-pad-(v-min)/(max-min)*(H-2*pad);};
+  var poly=pts.map(function(r,i){return x(i).toFixed(1)+','+y(r[key]).toFixed(1);}).join(' ');
+  var dots=pts.map(function(r,i){return '<circle cx="'+x(i).toFixed(1)+'" cy="'+y(r[key]).toFixed(1)+'" r="3.5" fill="var(--card)" stroke="currentColor" stroke-width="2"><title>'+fmtD(r.d)+': '+fmt(r[key])+'</title></circle>';}).join('');
+  var last=pts[pts.length-1];
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+key+' over the last readings">'+
+    '<rect x="'+pad+'" y="'+y(hi).toFixed(1)+'" width="'+(W-2*pad)+'" height="'+(y(lo)-y(hi)).toFixed(1)+'" fill="var(--ok-soft)" rx="4"/>'+
+    '<polyline points="'+poly+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+dots+
+    '<text x="'+(x(pts.length-1)-8).toFixed(1)+'" y="'+(y(last[key])-9).toFixed(1)+'" font-size="11" text-anchor="end" fill="currentColor" font-weight="600">'+fmt(last[key])+'</text></svg>';
+}
+
+function render(){
+  var S=state, s=st(), r=s.regime, V=s.volume, N=s.nutrient, last=lastReading(), T=tasks();
+  var rr=N.rates[r], rc=N.rates.topup, ect=N.ec[r];
+  var lc=since(S.reservoir.lastChange), cb=since(S.calib.last);
+  var perU=s.volUnit==='gal'?GAL:1, perL=s.volUnit==='gal'?'mL/gal':'mL/L';
+  var doseRow=function(i,name,rate){ return '<div class="dose"><i class="p'+(i%4)+'"></i><span class="n">'+esc(name)+'</span><span class="r">'+n2(rate*perU)+' '+perL+'</span><span class="ml">'+n1(rate*V)+'<small> mL</small></span></div>'; };
+  var modeLbl= mode==='artifact'?'<span class="pill ok">● synced</span>':(mode==='local'?'<span class="pill warn">● saved on this device</span>':'<span class="pill">● …</span>');
+  var nA=T.filter(function(t){return t.lvl==='act';}).length, nW=T.filter(function(t){return t.lvl==='watch';}).length;
+  var cols=s.columns;
+
+  var html='<div class="wrap">'+
+  '<header class="top"><div><h1>'+esc(s.name)+'</h1><p class="sub">'+(nA? plural(nA,'thing')+' to do today.' : (nW? 'Nothing urgent. '+plural(nW,'thing')+' to keep an eye on.' : 'Nothing to do. Enjoy the salad. 🥗'))+'</p></div>'+
+  '<div class="pills">'+modeLbl+'<span class="pill"><b>'+vTxt(V)+'</b></span><span class="pill">'+REGIMES[r]+'</span><span class="pill">'+esc(N.brand)+'</span></div></header>'+
+
+  (S.demo?'<div class="banner"><span><b>Demo data.</b> Explore freely, then start fresh with your own tower.</span><button class="btn sm" data-a="fresh">Start fresh</button></div>':'')+
+
+  '<section class="card hero"><div class="card-hd"><h2>Today</h2><span class="meta">'+fmtD(todayISO())+'</span></div><div class="tasks">'+
+  (T.length? T.map(function(t){ return '<div class="task '+t.lvl+'"><span class="ic">'+t.ic+'</span><div><div class="lvl">'+({act:'to do',watch:'keep an eye',ok:'good news'}[t.lvl])+'</div><div class="t">'+t.t+'</div><div class="d">'+t.d+'</div></div>'+(t.act? '<button class="btn sm" data-a="'+t.act.k+'" data-key="'+(t.act.key||'')+'" data-val="'+(t.act.val||'')+'" data-to="'+(t.act.to||'')+'">'+t.act.label+'</button>':'<span></span>')+'</div>'; }).join('') : '<div class="task ok"><span class="ic">✅</span><div><div class="t">Everything is in range.</div><div class="d">Next reading in a couple of days.</div></div><span></span></div>')+
+  '</div></section>'+
+
+  '<div class="grid">'+
+  /* READING */
+  '<section class="card c6" id="reading"><div class="card-hd"><h2>📝 Reading</h2><span class="meta">'+(last?'last: '+fmtD(last.d):'none yet')+'</span></div>'+
+  '<div class="gauges">'+gauge('pH',last?last.ph:null,last&&last.ph!=null?n1(last.ph):'',5.5,6.5,5.8,6.2,4.5,8)+
+  (s.ecMeter?gauge('EC',last?last.ec:null,last&&last.ec!=null?ecOut(last.ec)+'<small>'+ecU().l+'</small>':'',ect[2],ect[3],ect[0],ect[1],0.2,2.0):'')+
+  gauge('Water',last?last.t:null,last&&last.t!=null?n1(tOut(last.t))+'<small>'+tU()+'</small>':'',10,24,18,22,4,30)+
+  gauge('Level',last?last.level:null,last&&last.level!=null?n1(vOut(last.level))+'<small>'+volU()+'</small>':'',V*0.7,V*1.1,V*0.85,V*1.1,0,V*1.1)+'</div>'+
+  '<form id="f-read" novalidate class="frow"><div class="field"><label>pH</label><input name="ph" type="number" step="any" min="3" max="10" inputmode="decimal" placeholder="6.0"></div>'+
+  (s.ecMeter?'<div class="field"><label>EC <span class="unit">'+ecU().l+'</span></label><input name="ec" type="number" step="any" min="0" inputmode="decimal" placeholder="'+ecOut(ect[0])+'"></div>':'')+
+  '<div class="field"><label>Water <span class="unit">'+tU()+'</span></label><input name="t" type="number" step="any" inputmode="decimal" placeholder="'+n1(tOut(20))+'"></div>'+
+  '<div class="field"><label>Level <span class="unit">'+volU()+'</span></label><input name="level" type="number" step="any" min="0" inputmode="decimal" placeholder="'+n1(vOut(V))+'"></div>'+
+  '<div class="field"><label>Date</label><input name="d" type="date" value="'+todayISO()+'"></div>'+
+  '<div class="field" style="justify-content:flex-end"><button class="btn" type="submit">Save reading</button></div></form>'+
+  '<p class="tiny">Targets: pH 5.8 to 6.2'+(s.ecMeter?' · EC '+ecOut(ect[0])+' to '+ecOut(ect[1])+' '+ecU().l+' ('+REGIMES[r].toLowerCase()+')':'')+' · water '+n1(tOut(18))+' to '+n1(tOut(22))+' '+tU()+'. Light band = acceptable, dark band = ideal.</p></section>'+
+
+  /* RESERVOIR */
+  '<section class="card c6" id="reservoir"><div class="card-hd"><h2>🪣 Reservoir</h2><span class="meta">'+vTxt(V)+'</span></div>'+
+  '<div class="stats"><div class="stat"><span class="k">Fresh solution</span><span class="v">'+(lc===null?'–':lc+'<small> d</small>')+'</span><span class="s">'+(S.reservoir.lastChange?'since '+fmtD(S.reservoir.lastChange):'date not set')+'</span></div>'+
+  '<div class="stat"><span class="k">Top-ups</span><span class="v">'+n1(vOut(S.reservoir.topUp))+'<small> '+volU()+'</small></span><span class="s">since the last drain</span></div>'+
+  '<div class="stat"><span class="k">Next drain</span><span class="v">'+(lc===null?'–':Math.max(0,21-lc)+'<small> d</small>')+'</span><span class="s">'+(s.ecMeter?'or when top-ups reach '+vTxt(V):'one third every week')+'</span></div></div>'+
+  (lc!==null?'<div class="prog"><i class="'+(lc>=21?'act':(lc>=17?'watch':''))+'" style="width:'+clamp(lc/21*100,0,100)+'%"></i></div>':'')+
+  '<div class="actions"><form id="f-top" novalidate class="actions"><input class="inline" name="l" type="number" step="any" min="0" inputmode="decimal" placeholder="'+volU()+' added" aria-label="Top-up amount"><button class="btn ghost sm" type="submit">+ top-up</button></form>'+
+  '<button class="btn sm" data-a="change">Drained today</button>'+(s.ecMeter?'':'<button class="btn ghost sm" data-a="third">Third done</button>')+'</div></section>'+
+
+  /* DOSES */
+  '<section class="card c6" id="doses"><div class="card-hd"><h2>🧴 Doses for '+vTxt(V)+'</h2><div class="seg" role="group" aria-label="Regime">'+Object.keys(REGIMES).map(function(k){return '<button data-a="regime" data-val="'+k+'" aria-pressed="'+(r===k)+'">'+REGIMES[k]+'</button>';}).join('')+'</div></div>'+
+  '<div class="doses">'+N.parts.map(function(p,i){return doseRow(i,p,rr[i]);}).join('')+'</div>'+
+  (function(){ var F=ecFix(), u=ecU().l, head='<div class="card-hd" style="margin-top:2px"><h2 style="font-size:1.02rem">🎯 EC correction</h2><span class="meta">'+(F.ec!=null?'from your last reading':'')+'</span></div>';
+    if(F.k==='nometer') return '';
+    if(F.k==='none') return head+'<p class="muted">Save an EC reading and the exact amount to add appears here.</p>';
+    var stale=F.age>2?'<p class="tiny">This reading is '+plural(F.age,'day')+' old. Measure again before adding anything.</p>':'';
+    var where='EC '+ecOut(F.ec)+' → target '+ecOut(F.target)+' '+u+', for '+vTxt(F.vol)+' in the tank';
+    if(F.k==='ok') return head+'<div class="fix ok"><b>✅ Nothing to add.</b><span>EC is '+ecOut(F.ec)+' '+u+', inside the ideal range.</span></div>'+stale;
+    if(F.k==='high') return head+'<div class="fix act"><b>💧 Plain water only.</b><span>EC is '+ecOut(F.ec)+' '+u+', above the alert level. Add no nutrients.</span></div>'+stale;
+    var rows=N.parts.map(function(p,i){ return '<div class="dose"><i class="p'+(i%4)+'"></i><span class="n">'+esc(p)+'</span><span class="r">'+(F.split?'half now: '+n1(F.amounts[i]/2)+' mL':'')+'</span><span class="ml">'+n1(F.amounts[i])+'<small> mL</small></span></div>'; }).join('');
+    return head+'<div class="fix '+(F.k==='low'?'act':'watch')+'"><b>'+(F.k==='low'?'🍽️ Add this to bring EC back up.':'↗️ Slightly low. Optional top-up.')+'</b><span>'+where+'.</span></div>'+
+      '<div class="doses">'+rows+'</div>'+
+      '<p class="tiny">'+(F.lowWater?'The tank is low: top up with plain water first, measure EC again, then use the new figures. ':'')+(F.split?'This is a large correction: add half, stir, measure after 15 min, then add the rest only if still low. ':'Add in order, stir, measure again after 15 min. ')+'Based on your top-up row raising EC by '+n2(N.topupGain)+' mS/cm.</p>'+stale; })()+
+  '<div class="steps"><span>💧 rested water</span>'+N.parts.map(function(p){return '<em>→</em><span>'+esc(p)+'</span>';}).join('')+'<em>→</em><span>⏱ 15 min</span><em>→</em><span>⚗️ pH to 6.0</span></div>'+
+  '<p class="tiny">Each bottle goes straight into the full volume, stirring in between. Never mix two concentrates together.'+'</p>'+
+  '<p class="tiny">'+({recovery:'Recovery: first 10 days after transplanting.',cruise:'Cruise: the default while plants grow well.',lowlight:'Low light: short days or slow growth. Plants that barely grow barely eat.'}[r])+' Doses are for '+esc(N.brand)+'. <button class="btn ghost sm" data-a="nutrient" style="padding:3px 10px;font-size:.72rem">Edit doses</button></p></section>'+
+
+  /* SETUP */
+  '<section class="card c6" id="setup"><div class="card-hd"><h2>⚙️ Setup</h2><span class="meta">changes the advice</span></div><div class="toggles">'+
+  [['phDown','pH Down','needed to bring tap water into range'],['ecMeter','EC meter','unlocks top-ups instead of weekly drains'],['outdoors','Tower is outdoors','adds frost reminders in the low light regime']].map(function(x){return '<div class="tg"><span class="l">'+x[1]+'<small>'+x[2]+'</small></span><button class="sw" role="switch" aria-checked="'+!!s[x[0]]+'" data-a="toggle" data-key="'+x[0]+'" aria-label="'+x[1]+'"></button></div>';}).join('')+'</div>'+
+  '<div class="frow"><div class="field"><label>Name</label><input data-set="name" value="'+esc(s.name)+'"></div>'+
+  '<div class="field"><label>Tank <span class="unit">'+volU()+'</span></label><input data-set="volume" type="number" step="any" min="1" value="'+n1(vOut(V))+'" inputmode="decimal"></div>'+
+  '<div class="field"><label>Columns</label><input data-set="columns" type="number" min="1" max="8" value="'+s.columns+'" inputmode="numeric"></div>'+
+  '<div class="field"><label>Levels</label><input data-set="levels" type="number" min="1" max="12" value="'+s.levels+'" inputmode="numeric"></div></div>'+
+  '<div class="frow"><div class="field"><label>Volume</label><select data-set="volUnit"><option value="L"'+(s.volUnit==='L'?' selected':'')+'>Litres</option><option value="gal"'+(s.volUnit==='gal'?' selected':'')+'>US gallons</option></select></div>'+
+  '<div class="field"><label>Temperature</label><select data-set="tempUnit"><option value="C"'+(s.tempUnit==='C'?' selected':'')+'>°C</option><option value="F"'+(s.tempUnit==='F'?' selected':'')+'>°F</option></select></div>'+
+  '<div class="field"><label>EC reading</label><select data-set="ecUnit">'+Object.keys(EC_UNITS).map(function(k){return '<option value="'+k+'"'+(s.ecUnit===k?' selected':'')+'>'+EC_UNITS[k].l+'</option>';}).join('')+'</select></div></div>'+
+  '<div class="stats"><div class="stat"><span class="k">pH calibration</span><span class="v">'+(cb===null?'–':cb+'<small> d</small>')+'</span><span class="s">every 30 days</span></div></div>'+
+  '<div class="actions"><button class="btn ghost sm" data-a="calib">🎯 Calibrated today</button></div></section>'+
+
+  /* TOWER */
+  '<section class="card" id="tower"><div class="card-hd"><h2>🌱 The tower · '+cols+' columns × '+s.levels+' levels</h2><span class="meta">'+S.slots.filter(Boolean).length+' of '+nSlots()+' planted</span></div>'+
+  '<div class="tgrid" style="grid-template-columns:38px repeat('+cols+',1fr)"><span></span>'+Array.apply(null,Array(cols)).map(function(_,i){return '<span class="hd">Column '+colName(i)+'</span>';}).join('')+
+  S.slots.map(function(x,i){ var lv=levelOf(i), c=colOf(i), ss=slotStatus(i), light=levelLight(lv);
+    var pre=(c===0)?'<span class="lv" title="Level '+(lv+1)+': about '+light+' % of the light at the top"><i style="height:'+Math.round(light*0.3)+'px"></i>'+(lv+1)+'</span>':'';
+    var body= ss.k!=='empty'? '<b>'+CROPS[x.c].s+' '+CROPS[x.c].n+'</b><span class="age">'+(ss.label?ss.label:'day '+ss.age+' · ready ~day '+ss.ready)+'</span>' : '<span>free</span><span class="age">'+light+' % light</span>';
+    return pre+'<button class="slot '+ss.k+'" data-a="slot" data-i="'+i+'" title="'+slotName(i)+' · '+light+' % light'+(ss.k!=='empty'?' · planted '+fmtD(x.p):'')+'">'+body+'</button>'; }).join('')+
+  '</div><div class="legend"><span><i></i>growing</span><span><i class="rd"></i>ready to harvest</span><span><i class="o"></i>replace</span><span>bar = share of light per level</span></div>'+
+  '<p class="tiny">Level 1 is the top and gets the most light. Hungry plants go up, shade-tolerant ones (chives, parsley, chervil) go down. Tap a site to plant it, empty it or change its date.</p></section>'+
+
+  /* HISTORY */
+  '<section class="card c6"><div class="card-hd"><h2>pH history</h2><span class="meta">band = acceptable</span></div>'+spark('ph',5.5,6.5,n1)+'</section>'+
+  '<section class="card c6"><div class="card-hd"><h2>'+(s.ecMeter?'EC history':'Water temperature')+'</h2><span class="meta">band = acceptable</span></div>'+(s.ecMeter?spark('ec',ect[2],ect[3],ecOut):spark('t',18,22,function(v){return n1(tOut(v));}))+'</section>'+
+
+  /* DATA */
+  '<section class="card" id="data"><div class="card-hd"><h2>🤝 Ask Claude</h2><span class="meta">your data stays yours</span></div>'+
+  '<p class="muted">Copy a summary of your tower and paste it into a conversation with Claude to get advice on your actual readings.</p>'+
+  '<div class="actions"><button class="btn sm" data-a="copy">Copy summary for Claude</button><button class="btn ghost sm" data-a="export">Export backup</button><button class="btn ghost sm" data-a="import">Import backup</button><button class="btn danger sm" data-a="reset">Erase everything</button><input id="file" type="file" accept="application/json,.json" hidden></div></section>'+
+
+  '</div>'+
+  '<p class="foot">Advice follows your readings and your setup. Default doses are for Terra Aquatica TriPart on soft tap water: measure your own EC and adjust. Harvest dates are rough estimates.</p>'+
+  '</div>'+
+  (dirty?'<div class="fab"><span>Unsaved changes</span><button class="btn sm" data-a="save">Save</button></div>':'')+
+  (saving?'<div class="toast">Saving…</div>':'')+
+  '<dialog id="sheet"></dialog>';
+  app.innerHTML=html;
+  document.title=s.name;
+}
+
+/* ---------- interactions ---------- */
+app.addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]'); if(!b) return;
+  var a=b.dataset.a;
+  if(a==='toggle'){ var k=b.dataset.key; commit(function(S){S.settings[k]=!S.settings[k];},true); }
+  else if(a==='regime'){ var v=b.dataset.val; commit(function(S){S.settings.regime=v;},true); }
+  else if(a==='change'){ commit(function(S){S.reservoir.lastChange=todayISO();S.reservoir.topUp=0;S.reservoir.lastThird=null;},true); }
+  else if(a==='third'){ commit(function(S){S.reservoir.lastThird=todayISO();},true); }
+  else if(a==='calib'){ commit(function(S){S.calib.last=todayISO();},true); }
+  else if(a==='save'){ save(); }
+  else if(a==='scroll'){ var el=document.getElementById(b.dataset.to); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  else if(a==='slot'){ openSlot(+b.dataset.i); }
+  else if(a==='nutrient'){ openNutrient(); }
+  else if(a==='copy'){ copyText(summary()); }
+  else if(a==='export'){ exportBackup(); }
+  else if(a==='import'){ openImport(); }
+  else if(a==='fresh'){ var keep=state.settings; state=defaults(); state.settings=Object.assign(state.settings,{volUnit:keep.volUnit,tempUnit:keep.tempUnit,ecUnit:keep.ecUnit}); state=normalise(state); save(); }
+  else if(a==='reset'){ openConfirm(); }
+});
+app.addEventListener('submit',function(e){
+  if(e.target.id==='f-read'){ e.preventDefault(); var f=e.target; var g=function(n){var el=f.elements[n]; if(!el||el.value==='') return null; var x=parseFloat(el.value); return isNaN(x)?null:x;}; var d=f.elements.d.value||todayISO();
+    var ec=g('ec'), t=g('t'), lv=g('level');
+    var rec={d:d,ph:g('ph'),ec:(ec==null?null:ecIn(ec)),t:(t==null?null:Math.round(tIn(t)*10)/10),level:(lv==null?null:Math.round(vIn(lv)*10)/10)};
+    if(rec.ph==null&&rec.ec==null&&rec.t==null&&rec.level==null){toast('Enter at least one value');return;}
+    commit(function(S){S.readings.push(rec); S.readings.sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0);}); if(S.readings.length>200) S.readings=S.readings.slice(-200);},true); }
+  if(e.target.id==='f-top'){ e.preventDefault(); var l=parseFloat(e.target.elements.l.value); if(!(l>0)){toast('How much did you add?');return;} commit(function(S){S.reservoir.topUp=Math.round((S.reservoir.topUp+vIn(l))*10)/10;},true); }
+});
+app.addEventListener('change',function(e){
+  var k=e.target.dataset&&e.target.dataset.set;
+  if(k){ var v=e.target.value;
+    if(k==='name'){ v=v.trim(); if(v) commit(function(S){S.settings.name=v.slice(0,40);},true); }
+    else if(k==='volume'){ var x=parseFloat(v); if(x>0) commit(function(S){S.settings.volume=Math.round(vIn(x)*10)/10;},true); }
+    else if(k==='columns'||k==='levels'){ var n=parseInt(v,10); if(n>=1) commit(function(S){S.settings[k]=n; normalise(S);},true); }
+    else commit(function(S){S.settings[k]=v;},true);
+  }
+  if(e.target.id==='file' && e.target.files && e.target.files[0]){
+    var rd=new FileReader(); rd.onload=function(){ importBackup(rd.result); }; rd.readAsText(e.target.files[0]);
+  }
+});
+
+function wire(dlg){ Array.prototype.forEach.call(dlg.querySelectorAll('[data-close]'),function(b){ b.onclick=function(){ dlg.close(b.dataset.close); }; }); }
+function openSlot(i){
+  var dlg=document.getElementById('sheet'), x=state.slots[i], lv=levelOf(i), L=st().levels;
+  var opts=Object.keys(CROPS).map(function(k){return '<option value="'+k+'"'+(x&&x.c===k?' selected':'')+'>'+CROPS[k].s+' '+CROPS[k].n+'</option>';}).join('');
+  var hint=lv<L/3?'Top levels: head lettuce and basil.':(lv<2*L/3?'Middle levels: cut lettuce, lamb\'s lettuce, spinach, mizuna.':'Bottom levels: chives, parsley, chervil, the shade-tolerant ones.');
+  dlg.innerHTML='<form method="dialog" class="sheet"><h3>Site '+slotName(i)+'</h3><p class="muted">'+hint+' Light here: about '+levelLight(lv)+' %.</p>'+
+    '<div class="field"><label>Crop</label><select name="c"><option value="">empty</option>'+opts+'</select></div>'+
+    '<div class="field"><label>Planted on</label><input name="p" type="date" value="'+(x?x.p:todayISO())+'"></div>'+
+    '<div class="actions" style="justify-content:flex-end"><button class="btn ghost sm" type="button" data-close="cancel">Cancel</button>'+(x?'<button class="btn ghost sm" type="button" data-close="clear">Harvested / empty</button>':'')+'<button class="btn sm" value="ok">OK</button></div></form>';
+  dlg.returnValue=''; wire(dlg); dlg.showModal();
+  dlg.onclose=function(){ var f=dlg.querySelector('form'), rv=dlg.returnValue;
+    if(rv==='ok'){ var c=f.elements.c.value, p=f.elements.p.value||todayISO(); commit(function(S){S.slots[i]=c?{c:c,p:p}:null;},true); }
+    else if(rv==='clear'){ commit(function(S){S.slots[i]=null;},true); } };
+}
+function openNutrient(){
+  var dlg=document.getElementById('sheet'), N=st().nutrient, rows=[['recovery','Recovery'],['cruise','Cruise'],['lowlight','Low light'],['topup','Top-up']];
+  dlg.innerHTML='<form method="dialog" class="sheet"><h3>Nutrients and doses</h3><p class="muted">Doses in mL per litre. Change them only from your own EC measurements.</p>'+
+    '<div class="field"><label>Brand</label><input name="brand" value="'+esc(N.brand)+'"></div>'+
+    '<div class="rates"><span class="h">Bottle name</span>'+N.parts.map(function(p,i){return '<input name="part'+i+'" value="'+esc(p)+'" aria-label="Bottle '+(i+1)+'">';}).join('')+
+    rows.map(function(r){ return '<span>'+r[1]+'</span>'+N.parts.map(function(_,i){return '<input name="'+r[0]+i+'" type="number" step="any" min="0" value="'+N.rates[r[0]][i]+'" aria-label="'+r[1]+' bottle '+(i+1)+'">';}).join(''); }).join('')+'</div>'+
+    '<div class="field"><label>The top-up row raises EC by <span class="unit">mS/cm</span></label><input name="gain" type="number" step="any" min="0.01" value="'+N.topupGain+'"></div>'+
+    '<div class="actions" style="justify-content:space-between"><button class="btn ghost sm" type="button" data-close="default">Restore TriPart defaults</button><span class="actions"><button class="btn ghost sm" type="button" data-close="cancel">Cancel</button><button class="btn sm" value="ok">Save</button></span></div></form>';
+  dlg.returnValue=''; wire(dlg); dlg.showModal();
+  dlg.onclose=function(){ var f=dlg.querySelector('form'), rv=dlg.returnValue;
+    if(rv==='default'){ commit(function(S){S.settings.nutrient=defaultNutrient();},true); }
+    else if(rv==='ok'){ commit(function(S){ var n=S.settings.nutrient; n.brand=(f.elements.brand.value.trim()||n.brand).slice(0,40);
+      n.parts=n.parts.map(function(p,i){ return (f.elements['part'+i].value.trim()||p).slice(0,16); });
+      rows.forEach(function(r){ n.rates[r[0]]=n.parts.map(function(_,i){ var x=parseFloat(f.elements[r[0]+i].value); return (x>=0)?x:n.rates[r[0]][i]; }); });
+      var g=parseFloat(f.elements.gain.value); if(g>0) n.topupGain=g; },true); } };
+}
+function openImport(){
+  var dlg=document.getElementById('sheet');
+  dlg.innerHTML='<form method="dialog" class="sheet"><h3>Import a backup</h3><p class="muted">Choose a backup file, or paste the backup text below. This replaces the current data.</p><textarea name="txt" rows="5" placeholder="Paste backup text here" style="padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);width:100%;resize:vertical"></textarea><div class="actions" style="justify-content:space-between"><button class="btn ghost sm" type="button" data-close="file">Choose a file</button><span class="actions"><button class="btn ghost sm" type="button" data-close="cancel">Cancel</button><button class="btn sm" value="ok">Import</button></span></div></form>';
+  dlg.returnValue=''; wire(dlg); dlg.showModal();
+  dlg.onclose=function(){ var rv=dlg.returnValue, t=dlg.querySelector('textarea').value.trim();
+    if(rv==='file'){ document.getElementById('file').click(); }
+    else if(rv==='ok'){ if(t) importBackup(t); else toast('Nothing to import'); } };
+}
+function openConfirm(){
+  var dlg=document.getElementById('sheet');
+  dlg.innerHTML='<form method="dialog" class="sheet"><h3>Erase everything?</h3><p class="muted">Readings, plants and settings will be removed. Export a backup first if you may want them back.</p><div class="actions" style="justify-content:flex-end"><button class="btn ghost sm" type="button" data-close="cancel">Cancel</button><button class="btn danger sm" type="button" data-close="ok">Erase</button></div></form>';
+  dlg.returnValue=''; wire(dlg); dlg.showModal();
+  dlg.onclose=function(){ if(dlg.returnValue==='ok'){ state=normalise(defaults()); save(); } };
+}
+
+/* ---------- boot ---------- */
+state=load(); render();
+window.__tower={build:function(){return buildDocument(state);},state:function(){return state;},summary:summary};
+try{ var tm=sessionStorage.getItem(KEY+'-toast'); if(tm){ sessionStorage.removeItem(KEY+'-toast'); toast(tm+' ✓'); } }catch(e){}
+artifactP=((window.claude&&typeof window.claude.use==='function')? window.claude.use('artifact') : Promise.resolve(null))
+  .then(function(ns){ artifact=ns||null; mode=ns?'artifact':'local'; render(); return ns; }).catch(function(){ mode='local'; render(); return null; });
+if(window.claude&&typeof window.claude.use==='function'){ window.claude.use('downloads').then(function(ns){ downloads=ns||null; },function(){}); }
+})();
+</script></body></html>
