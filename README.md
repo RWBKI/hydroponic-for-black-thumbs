@@ -7,6 +7,14 @@ A home-built, 24-site hydroponic tower, the growing method that keeps it alive, 
 This is an independent community project. It is not affiliated with or endorsed by Anthropic.
 
 <p align="center">
+  <img src="media/dashboard-demo.gif" alt="Demo of the dashboard: you type pH, EC, water temperature and tank level, and the Today card lists what to do, with doses in mL. Then the tower map with the plants ready to harvest, and the button that copies a summary for Claude" width="800">
+</p>
+
+<p align="center"><em>The dashboard: type your readings, it tells you what to do today. Runs on demo data until you press "Start fresh". <a href="dashboard/">Get it</a> or let the <a href="plugins/hydroponic-for-black-thumbs/">Claude plugin</a> set it up for your tower.</em></p>
+
+<h3 align="center">The results</h3>
+
+<p align="center">
   <img src="media/parsley-soil-vs-tower.jpg" alt="Two parsley stems next to a tape measure: the one grown in soil on the left, the one grown in the tower on the right" width="420">
 </p>
 
