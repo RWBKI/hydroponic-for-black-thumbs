@@ -10,7 +10,7 @@ This is an independent community project. It is not affiliated with or endorsed 
   <img src="media/dashboard-demo.gif" alt="Demo of the dashboard: you type pH, EC, water temperature and tank level, and the Today card lists what to do, with doses in mL. Then the tower map with the plants ready to harvest, and the button that copies a summary for Claude" width="800">
 </p>
 
-<p align="center"><em>The dashboard: type your readings, it tells you what to do today. Runs on demo data until you press "Start fresh". <a href="dashboard/">Get it</a> or let the <a href="plugins/hydroponic-for-black-thumbs/">Claude plugin</a> set it up for your tower.</em></p>
+<p align="center"><em>The dashboard: type your readings, it tells you what to do today. Runs on demo data until you press "Start fresh".</em><br><strong><a href="https://rwbki.github.io/hydroponic-for-black-thumbs/dashboard/">▶ Try it live in your browser</a></strong><br><em><a href="dashboard/">Download it</a> or let the <a href="plugins/hydroponic-for-black-thumbs/">Claude plugin</a> set it up for your tower.</em></p>
 
 <h3 align="center">The results</h3>
 

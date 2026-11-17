@@ -1,6 +1,6 @@
 # Dashboard
 
-One self-contained HTML file. Open `index.html` in a browser.
+One self-contained HTML file. Open `index.html` in a browser, or [try it live](https://rwbki.github.io/hydroponic-for-black-thumbs/dashboard/) without downloading anything.
 
 - Starts with demo data. Press "Start fresh" to use it for your own tower.
 - Enter pH, EC, water temperature and tank level. The "Today" card lists what to do, in order of urgency.
